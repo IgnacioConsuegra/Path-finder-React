@@ -1,11 +1,12 @@
-import { useEffect, useReducer } from 'react';
+import { useEffect, useReducer, useRef, useState } from 'react';
 import Cell from '../components/Cell';
 import Peon from '../assets/peon.png';
 import './index.css'
 
 export const ACTIONS = { 
   CREATE_CELLS: 'create-cells',
-  MODIFY_CELL : 'modify-cell'
+  MODIFY_CELL : 'modify-cell',
+  MODIFY_ALL : 'modify-all'
 }
 function reducer(cells, action) {
   switch(action.type)
@@ -14,17 +15,22 @@ function reducer(cells, action) {
       return action.payload.arr;
 
     case ACTIONS.MODIFY_CELL:
-      return cells.map(row => {
-        if (row.some(item => item.id === action.payload.id)) {
-          return row.map(item => {
-            if (item.id === action.payload.id) {
-              return { ...item, property: action.payload.value };
+      const { row, column, value } = action.payload;
+      const updatedTable = cells.table.map((rowArray, rowIndex) => {
+        if (rowIndex === row) {
+          return rowArray.map((node, columnIndex) => {
+            if (columnIndex === column) {
+              return { ...node, value: value };
             }
-            return item;
+            return node;
           });
         }
-        return row;
+        return rowArray;
       });
+      return { ...cells, table: updatedTable };
+      
+    case ACTIONS.MODIFY_ALL : 
+      return action.payload.arr;
   }
 }
 
@@ -32,10 +38,14 @@ function reducer(cells, action) {
 
 const Table = () => {
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  const [cells, dispatch] = useReducer(reducer, [[], []])
+  const [cells, dispatch] = useReducer(reducer, [[], []]);
+  const [reRender, setReRender] = useState(1);
+  const breathJustOnce = useRef();
+
   const classes = ["empty", "init", "end", "wall", "searching"];
   // eslint-disable-next-line react-hooks/r~ules-of-hooks
   useEffect(() => {
+    breathJustOnce.current = true;
     const table = [];
     for(let i = 0; i < 8; i++){
       const row = [];
@@ -138,14 +148,13 @@ const Table = () => {
       moveNodeToLeft(x, y)
       {
         const node = this.getNode(x, y);
-        console.log(node);
         if(node['left'])
         {
           node['left'].value = 4;
         }
       }
 
-      bfs()
+      async bfs()
       {
         let startNode = this.startNode;
         let endNode = this.endNode;
@@ -157,11 +166,10 @@ const Table = () => {
           {
             let currentNode = this.queue.shift();
             let neighbors = this.getNeighbors(currentNode);
+            
             for(let neighbor in neighbors)
             {
-
               let myNeighbor = neighbors[neighbor];
-
               if(myNeighbor === this.endNode)
               {
                 while(this.queue.length > 0)
@@ -174,15 +182,21 @@ const Table = () => {
               {
                 continue;
               }
-              if(!this.visited.has(myNeighbor) && myNeighbor !== null)
-              {
+              if (!this.visited.has(myNeighbor) && myNeighbor !== null) {
+                await new Promise(resolve => setTimeout(resolve, 1000)); 
                 this.queue.push(myNeighbor);
                 this.visited.add(myNeighbor);
                 myNeighbor["value"] = 4;
-                // dispatch({type: ACTIONS.MODIFY_CELL,
-                //   payload: {id: myNeighbor["id"], value: 4, column: myNeighbor["column"], row: myNeighbor["row"]}})
+                
               }
+              if(myNeighbor === this.startNode)
+              {
+                continue;
+              }
+              dispatch({type: ACTIONS.MODIFY_CELL,
+                payload: {id: myNeighbor["id"], value: 4, column: myNeighbor["column"], row: myNeighbor["row"]}})
             }
+            
           }
         }
       }
@@ -199,31 +213,38 @@ const Table = () => {
     myTable.createWall(3, 4);
     myTable.createWall(2, 4);
     myTable.createWall(1, 4);
-    myTable.bfs();
     dispatch({type: ACTIONS.CREATE_CELLS, payload: {arr: myTable}})
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
   useEffect(() => {
-  
-    // dispatch({type: ACTIONS.CREATE_CELLS, payload: {arr: myTable}})
-
-    
-    
+    if(cells["endNode"])
+    {
+      if(breathJustOnce.current)
+      {
+        setTimeout(() => {
+          cells.bfs();
+          setReRender((prev) => setReRender(prev + 1));
+        }, 3 * 1000)
+      }
+      breathJustOnce.current = false;
+    }
   }, [cells])
 
   return (
     <div className='table'>
       {
-        cells["table"] && (
-          cells["table"].map((arr, index1) => {
-          
-            return arr.map((element, index2) => 
-            {
-              
-              return(<Cell key={index1 + index2} myClass={classes[element["value"]]} info={element}/>)
+        reRender && (
+          cells["table"] && (
+            cells["table"].map((arr) => {
+            
+              return arr.map((element) => 
+              {
+                
+                return(<Cell key={element.id} myClass={classes[element["value"]]} info={element}/>)
+              })
             })
-          })
+          )
         )
       }
     </div>
