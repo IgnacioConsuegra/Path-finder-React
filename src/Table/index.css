@@ -28,3 +28,23 @@
   white-space: wrap;
   font-size: 1em;
 }
+.table > div.empty
+{
+  background-color: none;
+}
+.table > div.init
+{
+  background-color: green;
+}
+.table > div.end
+{
+  background-color: red;
+}
+.table > div.wall
+{
+  background-color: black;
+}
+.table > div.searching
+{
+  background-color: pink;
+}
