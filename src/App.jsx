@@ -1,9 +1,8 @@
-import Table from './Table'
-import svg from './react.svg';
+import Boar from './Table/Board'
 function App() {
   return(
     <div className="container">
-      <Table/>
+      <Boar/>
     </div>
   )
 }

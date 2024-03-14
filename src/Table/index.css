@@ -48,3 +48,11 @@
 {
   background-color: pink;
 }
+.table > div.searched
+{
+  background-color: darkblue;
+}
+.table > div.path
+{
+  background-color: yellow;
+}
