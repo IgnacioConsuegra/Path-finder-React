@@ -74,7 +74,6 @@ export function Board()
     myTable.createWall(4, 4);
     myTable.createWall(6, 4);
     myTable.createWall(7, 4);
-    myTable.createWall(5, 4);
     myTable.createWall(3, 4);
     myTable.createWall(2, 4);
     myTable.createWall(1, 4);
@@ -87,7 +86,7 @@ export function Board()
       if(breathJustOnce.current)
       {
         setTimeout(() => {
-          cells.bfs();
+          cells.aStar();
           setReRender((prev) => setReRender(prev + 1));
         }, 1 * 1000)
       }
