@@ -2,14 +2,15 @@ import { breadthFirst } from "../../Algorithms/breadthFirst";
 import {aStarSearch} from "../../Algorithms/aStarSearch";
 import {myOwn} from '../../Algorithms/myOwn'
 export class Table {
-  constructor(table, dispatch) {
+  constructor(table, queue = [],
+    visited = new Set(), startNode = null,
+    endNode = null, dispatch = null) {
     this.table = table;
-    this.queue = [];
-    this.visited = new Set();
-    this.startNode = null;
-    this.endNode = null;
+    this.queue = queue;
+    this.visited = visited;
+    this.startNode = startNode;
+    this.endNode = endNode;
     this.dispatch = dispatch;
-    this.state = 0;
   }
   bindNodes() {
     for (let i = 0; i < this.table.length; i++) {
@@ -35,6 +36,9 @@ export class Table {
         this.table[i][j]["neighbors"] = [this.getNeighbors(this.table[i][j])];
       }
     }
+  }
+  updateTable(arr) {
+    this.table  = arr;
   }
   printAll() {
     console.log(this.table);

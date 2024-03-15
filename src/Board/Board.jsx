@@ -20,21 +20,49 @@ function reducer(table, action) {
     case ACTIONS.MODIFY_CELL:
       // eslint-disable-next-line no-case-declarations
       const { row, column, value } = action.payload;
-
-    
-      const updateTable = table["table"].map((mapRow, rowIndex) => {
-        return mapRow.map((mapColumn, columnIndex) => {
-          if(rowIndex === row && columnIndex === column) 
-          {
-            return mapColumn["value"] = value;
-          } else {
-            return column;
+        // eslint-disable-next-line no-case-declarations
+        const updatedTable = table["table"].map((rowArray, rowIndex) => {
+          if (rowIndex === row) {
+            return rowArray.map((node, columnIndex) => {
+              if (columnIndex === column) {
+                const updatedNode = new Node(
+                  node.id,
+                  value,
+                  node.row,
+                  node.column,
+                  node.g,
+                  node.f,
+                  node.h,
+                  node.neighbors,
+                  node.previous,
+                  node.left,
+                  node.right,
+                  node.top,
+                  node.bottom,
+                  node.topLeft,
+                  node.topRight,
+                  node.bottomLeft,
+                  node.bottomRight,
+                  node.minDistance
+                );
+                return updatedNode;
+              }
+              return node;
+            });
           }
-        })
-      })
-      table["state"] += 1;
-      return table;
+          return rowArray;
+        });
 
+
+        
+        const newTable = new Table(updatedTable, [], [],
+          table["startNode"],
+          table["endNode"],
+          table["dispatch"]
+        );
+        console.log(newTable)
+
+        return newTable;
     case ACTIONS.TEST:
 
       return table;
@@ -87,7 +115,7 @@ export function Board()
       )
     })
 
-    const myTable = new Table(myArrNodes, dispatch);
+    const myTable = new Table(myArrNodes, [], [], null, null, dispatch);
     myTable.bindNodes();
     myTable.createInit(5, 5);
     myTable.createEnd(7, 1);
@@ -110,6 +138,7 @@ export function Board()
     {
       if(table["endNode"])
       {
+        table.bindNodes();
         table.myOwn();
       }
     }
@@ -145,8 +174,6 @@ export function Board()
       {
           table["table"] && 
           (
-            table["state"] && 
-            (
               table["table"].map((arr) => {
             
               return arr.map((element) => 
@@ -164,7 +191,6 @@ export function Board()
                   />)
               })
               })
-            )
           )
       }
       </div>
