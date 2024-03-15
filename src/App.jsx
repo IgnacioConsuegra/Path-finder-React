@@ -1,4 +1,4 @@
-import Boar from './Table/Board'
+import Boar from './Board/Board'
 function App() {
   return(
     <div className="container">

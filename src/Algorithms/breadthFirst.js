@@ -1,4 +1,4 @@
-import { ACTIONS } from "../Table/Board";
+import { ACTIONS } from "../Board/Board";
 export async function breadthFirst(startNode, endNode, dispatch, getNeighbors) 
 {
   const queue = [];
