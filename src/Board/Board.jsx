@@ -1,3 +1,4 @@
+/* eslint-disable no-case-declarations */
 import { useEffect, useReducer, useRef, useState } from 'react';
 import Cell from '../components/Cell';
 import Peon from '../assets/peon.png';
@@ -11,6 +12,10 @@ export const ACTIONS = {
   UPDATE_SINGLE: 'update-single',
   TEST: 'test',
 }
+let initOverEnd = false;
+let initOrEndPositions = {};
+let changeEndPoints= false;
+let changeEndPointsPositions = {};
 function reducer(table, action) {
   switch(action.type)
   {
@@ -21,13 +26,23 @@ function reducer(table, action) {
       // eslint-disable-next-line no-case-declarations
       const { row, column, value } = action.payload;
         // eslint-disable-next-line no-case-declarations
-      
-      // if(value !== (1 || 2))
-      // {
-        const updatedTable = table["table"].map((rowArray, rowIndex) => {
+
+      const updatedTable = table["table"].map((rowArray, rowIndex) => {
           if (rowIndex === row) {
             return rowArray.map((node, columnIndex) => {
               if (columnIndex === column) {
+                  if(value === 1 && node["value"] === 2) {
+                    initOverEnd = true;
+                    initOrEndPositions["column"] = node.column;
+                    initOrEndPositions["row"] = node.row;
+                    initOrEndPositions["value"] = node.value;
+                  }
+                  if(value === 2 && node["value"] === 1) {
+                    initOverEnd = true;
+                    initOrEndPositions["column"] = node.column;
+                    initOrEndPositions["row"] = node.row;
+                    initOrEndPositions["value"] = node.value;
+                  }
                   const updatedNode = new Node(
                     node.id,
                     value,
@@ -54,17 +69,54 @@ function reducer(table, action) {
             });
           }
           return rowArray;
-        });
-      // } 
-        
+      });
+      let newT;
+      if(!initOverEnd){
         const newTable = new Table(updatedTable, [], [],
           table["startNode"],
           table["endNode"],
           table["dispatch"]
         );
-        console.log(newTable)
-
+        newT = newTable;
         return newTable;
+      }else{
+        if(initOrEndPositions["value"] === 1)
+        {
+          const newTable = new Table(updatedTable, [], [],
+          table["startNode"],
+          table["endNode"],
+          table["dispatch"]
+          );
+
+          newTable.createInit(initOrEndPositions["row"], initOrEndPositions["column"]);
+          if(initOrEndPositions["row"] === 1 && initOrEndPositions["column"] === 1)
+          {
+            newTable.createEnd(0, 1);
+          }else{
+            newTable.createEnd(0, 0);
+          }
+          newT = newTable;
+        }
+        if(initOrEndPositions["value"] === 2)
+        {
+          const newTable = new Table(updatedTable, [], [],
+            table["startNode"],
+            table["endNode"],
+            table["dispatch"]
+            );
+  
+            newTable.createEnd(initOrEndPositions["row"], initOrEndPositions["column"]);
+            if(initOrEndPositions["row"] === 1 && initOrEndPositions["column"] === 1)
+            {
+              newTable.createInit(0, 1);
+            }else{
+              newTable.createInit(0, 0);
+            }
+            newT = newTable;
+            return newTable;
+        }
+      }
+      return newT
     case ACTIONS.TEST:
 
       return table;
@@ -90,9 +142,7 @@ export function Board()
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const [table, dispatch] = useReducer(reducer, {});
   const [changingCellsOnOver, setChangingCellsOnOver] = useReducer(changeCellReducer, 0);
-  const [updateTable, setUpdateTable] = useState(false);
   const [isMouseDown, setIsMouseDown] = useState(false);
-
   const [start, setStart] = useState(false);
 
   const classes = ["empty", "init", "end", "wall", "searching", "searched", "path"];
@@ -144,12 +194,9 @@ export function Board()
   }, [start]);
 
   useEffect(() => {
-    console.log(isMouseDown, changingCellsOnOver);
-
   }, [isMouseDown, changingCellsOnOver])
 
   useEffect(() => {
-    console.log(changingCellsOnOver);
   }, [changingCellsOnOver])
   useEffect(() => 
   {

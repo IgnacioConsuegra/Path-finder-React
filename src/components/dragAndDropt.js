@@ -40,6 +40,7 @@ function createDiv(e) {
   newDiv.style.width = e.offsetWidth + "px";
   newDiv.style.height = e.offsetHeight + "px";
   newDiv.style.position = "absolute";
+  newDiv.id = "movingSquare"
   const color = window.getComputedStyle(e).backgroundColor;
   newDiv.style.backgroundColor = color;
   divDimensions.push(e.offsetWidth);

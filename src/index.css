@@ -11,3 +11,6 @@ a {
 li{
   list-style: none;
 }
+#movingSquare{
+  z-index: -100;
+}

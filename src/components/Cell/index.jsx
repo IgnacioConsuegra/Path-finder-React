@@ -58,15 +58,29 @@ const index = ({info, myClass, dispatch, handleMouseDown, isMouseDown, mouseUp, 
     handleMouseDown();
     handleMouseOver();
     
-    let newValue = info["value"] === 0 ? 3 : 0;
+    let toWhite = info["value"] === 0 ? 3 : 0;
     dispatch({
       type: ACTIONS.MODIFY_CELL,
       payload: {
-        value: newValue,
+        value: toWhite,
         column: info["column"],
         row: info["row"],
       },
     });
+
+    let newValue = 1;
+    if(info["value"] === 2)
+    {
+      newValue = 2;
+      dispatch({
+        type: ACTIONS.MODIFY_CELL,
+        payload: {
+          value: newValue,
+          column: info["column"],
+          row: info["row"],
+        },
+      });
+    }
   }
   const handleMouseUp = () => 
   {
@@ -76,7 +90,16 @@ const index = ({info, myClass, dispatch, handleMouseDown, isMouseDown, mouseUp, 
     if(info["value"] == 1 || 2)
     {
       dragAndDrop(e);
+      dispatch({
+        type: ACTIONS.MODIFY_CELL,
+        payload: {
+          value: 0,
+          column: info["column"],
+          row: info["row"],
+        },
+      });
     }
+    console.log("On click here")
   }
   return (
     <div
