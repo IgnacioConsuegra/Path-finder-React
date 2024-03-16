@@ -21,39 +21,41 @@ function reducer(table, action) {
       // eslint-disable-next-line no-case-declarations
       const { row, column, value } = action.payload;
         // eslint-disable-next-line no-case-declarations
+      
+      // if(value !== (1 || 2))
+      // {
         const updatedTable = table["table"].map((rowArray, rowIndex) => {
           if (rowIndex === row) {
             return rowArray.map((node, columnIndex) => {
               if (columnIndex === column) {
-                const updatedNode = new Node(
-                  node.id,
-                  value,
-                  node.row,
-                  node.column,
-                  node.g,
-                  node.f,
-                  node.h,
-                  node.neighbors,
-                  node.previous,
-                  node.left,
-                  node.right,
-                  node.top,
-                  node.bottom,
-                  node.topLeft,
-                  node.topRight,
-                  node.bottomLeft,
-                  node.bottomRight,
-                  node.minDistance
-                );
-                return updatedNode;
+                  const updatedNode = new Node(
+                    node.id,
+                    value,
+                    node.row,
+                    node.column,
+                    node.g,
+                    node.f,
+                    node.h,
+                    node.neighbors,
+                    node.previous,
+                    node.left,
+                    node.right,
+                    node.top,
+                    node.bottom,
+                    node.topLeft,
+                    node.topRight,
+                    node.bottomLeft,
+                    node.bottomRight,
+                    node.minDistance
+                  );
+                  return updatedNode;
               }
               return node;
             });
           }
           return rowArray;
         });
-
-
+      // } 
         
         const newTable = new Table(updatedTable, [], [],
           table["startNode"],
@@ -129,9 +131,6 @@ export function Board()
     myTable.createWall(5, 4);
 
     dispatch({type: ACTIONS.CREATE_TABLE, payload: {arr: myTable}});
-    document.getElementById("table").addEventListener("mouseup", function() {
-      handleMouseUp();
-  });
   }, [])
   useEffect(() => {
     if(start)
@@ -169,8 +168,8 @@ export function Board()
     setIsMouseDown(false);
   }
   return (
-    <section>
-      <div className='table' id='table'>
+    <section id='table'>
+      <div className='table' >
       {
           table["table"] && 
           (
@@ -185,6 +184,7 @@ export function Board()
                   info={element} 
                   dispatch={dispatch}
                   handleMouseDown={handleMouseDown}
+                  mouseUp={handleMouseUp}
                   changingCellsOnOver={changingCellsOnOver}
                   isMouseDown={isMouseDown}
                   setChangingCellsOnOver={setChangingCellsOnOver}

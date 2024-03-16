@@ -1,6 +1,6 @@
 import './index.css';
 import { ACTIONS } from '../../Board/Board';
-const index = ({info, myClass, dispatch, handleMouseDown, isMouseDown, changingCellsOnOver, setChangingCellsOnOver,}) => {
+const index = ({info, handleInit, myClass, dispatch, handleMouseDown, isMouseDown, mouseUp, changingCellsOnOver, setChangingCellsOnOver,}) => {
 
 
   const handleMouseOver = () => 
@@ -16,6 +16,14 @@ const index = ({info, myClass, dispatch, handleMouseDown, isMouseDown, changingC
       if(changingCellsOnOver === 3) 
       {
         newValue = 0;
+      }
+      if(info["value"] === 2)
+      {
+        handleInit();
+      }
+      if(info["value"] === 1)
+      {
+        handleInit();
       }
       dispatch({
         type: ACTIONS.MODIFY_CELL,
@@ -39,11 +47,34 @@ const index = ({info, myClass, dispatch, handleMouseDown, isMouseDown, changingC
       }
     )
     handleMouseDown();
+    handleMouseOver();
+    if(info["value"] === 2)
+    {
+      handleInit();
+    }
+    if(info["value"] === 1)
+    {
+      handleInit();
+    }
+    let newValue = info["value"] === 0 ? 3 : 0;
+    dispatch({
+      type: ACTIONS.MODIFY_CELL,
+      payload: {
+        value: newValue,
+        column: info["column"],
+        row: info["row"],
+      },
+    });
+  }
+  const handleMouseUp = () => 
+  {
+    mouseUp();
   }
   return (
     <div
     onMouseOver={handleMouseOver}
     onMouseDown={handleThisMouseDown}
+    onMouseUp={handleMouseUp}
     className={`cell ${myClass}`}>
     </div>
   )
