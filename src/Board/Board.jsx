@@ -168,8 +168,8 @@ export function Board()
     setIsMouseDown(false);
   }
   return (
-    <section id='table'>
-      <div className='table' >
+    <section id='main'>
+      <div id='table' className='table' >
       {
           table["table"] && 
           (

@@ -1,3 +1,8 @@
+section{
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+}
 .table{
   width: 80vw;
   height: 90vh;
@@ -10,6 +15,7 @@
   position: absolute;
   top: calc(50% - 45vh);
   left: calc(50% - 40vw);
+  /* position: relative; */
 }
 .table > div{
   width: calc(100% / 8);

@@ -1,6 +1,7 @@
 import './index.css';
 import { ACTIONS } from '../../Board/Board';
-const index = ({info, handleInit, myClass, dispatch, handleMouseDown, isMouseDown, mouseUp, changingCellsOnOver, setChangingCellsOnOver,}) => {
+import { dragAndDrop } from '../dragAndDropt';
+const index = ({info, myClass, dispatch, handleMouseDown, isMouseDown, mouseUp, changingCellsOnOver, setChangingCellsOnOver,}) => {
 
 
   const handleMouseOver = () => 
@@ -19,11 +20,11 @@ const index = ({info, handleInit, myClass, dispatch, handleMouseDown, isMouseDow
       }
       if(info["value"] === 2)
       {
-        handleInit();
+        return 1;
       }
       if(info["value"] === 1)
       {
-        handleInit();
+        return 1;
       }
       dispatch({
         type: ACTIONS.MODIFY_CELL,
@@ -46,16 +47,17 @@ const index = ({info, handleInit, myClass, dispatch, handleMouseDown, isMouseDow
         }
       }
     )
-    handleMouseDown();
-    handleMouseOver();
     if(info["value"] === 2)
     {
-      handleInit();
+      return ;
     }
     if(info["value"] === 1)
     {
-      handleInit();
+      return ;
     }
+    handleMouseDown();
+    handleMouseOver();
+    
     let newValue = info["value"] === 0 ? 3 : 0;
     dispatch({
       type: ACTIONS.MODIFY_CELL,
@@ -70,11 +72,19 @@ const index = ({info, handleInit, myClass, dispatch, handleMouseDown, isMouseDow
   {
     mouseUp();
   }
+  const handleClick = (e) => {
+    if(info["value"] == 1 || 2)
+    {
+      dragAndDrop(e);
+    }
+  }
   return (
     <div
     onMouseOver={handleMouseOver}
     onMouseDown={handleThisMouseDown}
     onMouseUp={handleMouseUp}
+    onClick={handleClick}
+    id={`${info["row"]}${info["column"]}`}
     className={`cell ${myClass}`}>
     </div>
   )
