@@ -1,7 +1,10 @@
 import './index.css';
 import { ACTIONS } from '../../Board/Board';
-import { dragAndDrop } from '../dragAndDropt';
-const index = ({info, myClass, dispatch, handleMouseDown, isMouseDown, mouseUp, changingCellsOnOver, setChangingCellsOnOver,}) => {
+import { dragAndDrop, removeDiv } from '../dragAndDropt';
+const index = ({info, myClass, 
+  dispatch, handleMouseDown, isMouseDown, mouseUp, changingCellsOnOver, 
+  nodeIsPressed, setNodeIsPressed,
+  setChangingCellsOnOver,}) => {
 
 
   const handleMouseOver = () => 
@@ -38,44 +41,30 @@ const index = ({info, myClass, dispatch, handleMouseDown, isMouseDown, mouseUp, 
   }
   const handleThisMouseDown = () => 
   {
-    setChangingCellsOnOver(
-      {
-        type: ACTIONS.UPDATE_SINGLE,
-        payload: 
-        {
-          value: info["value"],
-        }
-      }
-    )
-    if(info["value"] === 2)
+    console.log("On mouse Down")
+    if(info["value"] === 1 || info["value"] === 2)
     {
-      return ;
+      return;
     }
-    if(info["value"] === 1)
-    {
-      return ;
-    }
-    handleMouseDown();
-    handleMouseOver();
-    
-    let toWhite = info["value"] === 0 ? 3 : 0;
-    dispatch({
-      type: ACTIONS.MODIFY_CELL,
-      payload: {
-        value: toWhite,
-        column: info["column"],
-        row: info["row"],
-      },
-    });
 
-    let newValue = 1;
-    if(info["value"] === 2)
-    {
-      newValue = 2;
+    if(!nodeIsPressed){
+      setChangingCellsOnOver(
+        {
+          type: ACTIONS.UPDATE_SINGLE,
+          payload: 
+          {
+            value: info["value"],
+          }
+        }
+      )
+      handleMouseDown();
+      handleMouseOver();
+      
+      let toWhite = info["value"] === 0 ? 3 : 0;
       dispatch({
         type: ACTIONS.MODIFY_CELL,
         payload: {
-          value: newValue,
+          value: toWhite,
           column: info["column"],
           row: info["row"],
         },
@@ -87,19 +76,43 @@ const index = ({info, myClass, dispatch, handleMouseDown, isMouseDown, mouseUp, 
     mouseUp();
   }
   const handleClick = (e) => {
-    if(info["value"] == 1 || 2)
+    if(info["value"] === 1 || info["value"] === 2)
     {
-      dragAndDrop(e);
+      if(!nodeIsPressed){
+        dragAndDrop(e);
+        dispatch({
+          type: ACTIONS.MODIFY_CELL,
+          payload: {
+            value: info["value"],
+            column: info["column"],
+            row: info["row"], 
+          },
+        });
+      setNodeIsPressed();
+      }else{
+        removeDiv();
+        dispatch({
+          type: ACTIONS.MODIFY_CELL,
+          payload: {
+            value: info["value"],
+            column: info["column"],
+            row: info["row"], 
+          },
+        });
+      }
+      setNodeIsPressed();
+    }
+    else{
+      console.log("On click here");
       dispatch({
         type: ACTIONS.MODIFY_CELL,
         payload: {
-          value: 0,
+          value: info["value"],
           column: info["column"],
           row: info["row"],
         },
       });
     }
-    console.log("On click here")
   }
   return (
     <div

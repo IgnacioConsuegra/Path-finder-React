@@ -12,6 +12,14 @@ function handleThisClick()
     firstTime = false;
     return ; 
   }
+  const square = document.getElementById("movingSquare");
+
+  if(square){
+    document.body.removeChild(square);
+    console.log(document.getElementById("movingSquare"))
+    document.removeEventListener("click", handleThisClick);
+    document.removeEventListener("mousemove", handleMouseMove);
+  }
   newObject = true;
   removeDiv();
   toMove.pop();
@@ -19,6 +27,7 @@ function handleThisClick()
   divDimensions.pop();
   document.removeEventListener("click", handleThisClick);
   document.removeEventListener("mousemove", handleMouseMove);
+  console.log("Remove")
   firstTime = true;
 }
 export function dragAndDrop(event){
@@ -50,11 +59,15 @@ function createDiv(e) {
 }
 
 
-function removeDiv() {
-  const lastDiv = toMove[0];
-  if (lastDiv) {
-    lastDiv.remove();
+export function removeDiv() {
+  const square = document.getElementById("movingSquare");
+  if(square)
+  {
+  document.body.removeChild(square);
   }
+  // console.log(document.getElementById("movingSquare"))
+  // document.removeEventListener("click", handleThisClick);
+  // document.removeEventListener("mousemove", handleMouseMove);
 }
 
 
