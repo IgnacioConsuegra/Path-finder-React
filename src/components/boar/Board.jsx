@@ -7,6 +7,7 @@ import './Board.css'
 export const ACTIONS = { 
   CREATE_TABLE: 'create-table',
   MODIFY_ALL : 'modify-all',
+  MODIFY_CELL: 'modify-cell',
   UPDATE_SINGLE: 'update-single',
 }
 
