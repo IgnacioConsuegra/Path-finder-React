@@ -1,10 +1,10 @@
-import './index.css';
-import { ACTIONS } from '../../Board/Board';
-import { dragAndDrop, removeDiv } from '../dragAndDropt';
-const index = ({info, myClass, 
-  dispatch, handleMouseDown, isMouseDown, mouseUp, changingCellsOnOver, 
+import './Cell.css';
+import { ACTIONS } from '../boar/Board';
+import { dragAndDrop, removeDiv } from '../utils/dragAndDrop';
+function Cell({info, myClass, dispatch, 
+  handleMouseDown, isMouseDown, mouseUp, changingCellsOnOver, 
   nodeIsPressed, setNodeIsPressed,
-  setChangingCellsOnOver,}) => {
+  setChangingCellsOnOver,}){
 
 
   const handleMouseOver = () => 
@@ -41,7 +41,6 @@ const index = ({info, myClass,
   }
   const handleThisMouseDown = () => 
   {
-    console.log("On mouse Down")
     if(info["value"] === 1 || info["value"] === 2)
     {
       return;
@@ -102,8 +101,9 @@ const index = ({info, myClass,
       }
       setNodeIsPressed();
     }
+    //This wont change an empty or an wall cell, all this handle click,
+    //is used to move ours end and init nodes.
     else{
-      console.log("On click here");
       dispatch({
         type: ACTIONS.MODIFY_CELL,
         payload: {
@@ -112,6 +112,9 @@ const index = ({info, myClass,
           row: info["row"],
         },
       });
+      if(nodeIsPressed){
+        removeDiv();
+      }
     }
   }
   return (
@@ -126,4 +129,4 @@ const index = ({info, myClass,
   )
 }
 
-export default index
+export default Cell;

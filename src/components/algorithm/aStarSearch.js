@@ -1,4 +1,5 @@
-import { ACTIONS } from "../Board/Board";
+import { ACTIONS } from "../boar/Board";
+
 export async function aStarSearch(start, end, dispatch) 
 {
   const openSet = [];

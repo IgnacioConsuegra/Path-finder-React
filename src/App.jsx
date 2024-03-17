@@ -1,9 +1,9 @@
-import Boar from './Board/Board'
+import Boar from './components/boar/Board'
 function App() {
   return(
-    <div className="container">
+    <main className="container">
       <Boar/>
-    </div>
+    </main>
   )
 }
 export default App;

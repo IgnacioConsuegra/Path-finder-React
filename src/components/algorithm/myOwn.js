@@ -1,4 +1,4 @@
-import { ACTIONS } from "../Board/Board";
+import { ACTIONS } from "../boar/Board";
 export async function myOwn(start, end, dispatch) 
 {
   const toVisit = [];

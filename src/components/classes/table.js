@@ -1,6 +1,6 @@
-import { breadthFirst } from "../../Algorithms/breadthFirst";
-import {aStarSearch} from "../../Algorithms/aStarSearch";
-import {myOwn} from '../../Algorithms/myOwn'
+import { breadthFirst } from "../algorithm/breadthFirst";
+import {aStarSearch} from "../algorithm/aStarSearch";
+import {myOwn} from '../algorithm/myOwn'
 export class Table {
   constructor(table, queue = [],
     visited = new Set(), startNode = null,

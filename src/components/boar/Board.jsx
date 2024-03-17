@@ -1,22 +1,14 @@
 /* eslint-disable no-case-declarations */
 import { useEffect, useReducer, useRef, useState } from 'react';
-import Cell from '../components/Cell';
-import Peon from '../assets/peon.png';
-import './index.css'
-import { Node } from './Classes/node';
-import { Table } from './Classes/table';
+import { Node } from '../classes/node';
+import { Table } from '../classes/table';
+import Cell from '../cells/Cell';
+import './Board.css'
 export const ACTIONS = { 
   CREATE_TABLE: 'create-table',
-  MODIFY_CELL : 'modify-cell',
   MODIFY_ALL : 'modify-all',
   UPDATE_SINGLE: 'update-single',
-  TEST: 'test',
 }
-
-
-
-
-
 
 function changeCellReducer(changingCellsOnOver, action) {
   switch(action.type)
@@ -26,27 +18,46 @@ function changeCellReducer(changingCellsOnOver, action) {
   }
 }
 
-
-
 export function Board()
 {
-  // eslint-disable-next-line react-hooks/rules-of-hooks
   const holdingEndNodes = useRef();
   const updatedTable = useRef();
   const initOrEndEnd = useRef();
   const initOrEndStart = useRef();
   const newTable = useRef();
   const [nodeIsPressed, setNodeIsPressed] = useState(false);
-  const [table, dispatch] = useReducer(reducer, {});
-  const [changingCellsOnOver, setChangingCellsOnOver] = useReducer(changeCellReducer, 0);
   const [isMouseDown, setIsMouseDown] = useState(false);
   const [start, setStart] = useState(false);
+  const [table, dispatch] = useReducer(reducer, {});
+  const [changingCellsOnOver, setChangingCellsOnOver] = useReducer(changeCellReducer, 0);
   const classes = ["empty", "init", "end", "wall", "searching", "searched", "path"];
   useEffect(() => {
+    resetTable();
+  }, [])
+
+  useEffect(() => {
+    if(start)
+    {
+      if(table)
+      {
+        table.bindNodes();
+        table.aStar();
+      }
+    }
+  }, [start]);
+
+  function handleStart()
+  {
+    setStart(true);
+  }
+  function resetTable(){
     holdingEndNodes.current = false;
+    updatedTable.current = {};
     initOrEndEnd.current = {};
     initOrEndStart.current = {};
+    newTable.current = {};
     const table = [];
+    
     for(let i = 0; i < 8; i++){
       const row = [];
       for(let j = 0; j < 8; j++){
@@ -68,42 +79,11 @@ export function Board()
 
     const myTable = new Table(myArrNodes, [], [], null, null, dispatch);
     myTable.bindNodes();
-    myTable.createInit(5, 5);
-    myTable.createEnd(7, 1);
+    myTable.createInit(0, 0);
+    myTable.createEnd(7, 7);
 
-    myTable.createWall(7, 4);
-    myTable.createWall(6, 1);
-    myTable.createWall(6, 2);
-    myTable.createWall(6, 3);
-    myTable.createWall(6, 4);
-    myTable.createWall(6, 5);
-    myTable.createWall(5, 4);
 
     dispatch({type: ACTIONS.CREATE_TABLE, payload: {arr: myTable}});
-  }, [])
-  useEffect(() => {
-    if(start)
-    {
-      if(table)
-      {
-        console.log(table)
-        table.bindNodes();
-        table.aStar();
-      }
-    }
-  }, [start]);
-
-  useEffect(() => {
-  }, [isMouseDown, changingCellsOnOver])
-
-  useEffect(() => {
-  }, [changingCellsOnOver])
-  useEffect(() => 
-  {
-  }, [table])
-  function handleStart()
-  {
-    setStart((prev) => !prev);
   }
   function handleMouseDown() 
   {
@@ -120,26 +100,18 @@ export function Board()
         return action.payload.arr;
   
       case ACTIONS.MODIFY_CELL:
-        // eslint-disable-next-line no-case-declarations
-        console.log("Init")
         const { row, column, value } = action.payload;
-          // eslint-disable-next-line no-case-declarations
         if(holdingEndNodes.current){
-          console.log("Holding end nodes true")
           initOrEndEnd.current["column"] = column;
           initOrEndEnd.current["row"] = row;
           initOrEndEnd.current["value"] = value;
-          console.log(initOrEndStart.current, initOrEndEnd.current)
           if((initOrEndStart.current["value"] === 1 && initOrEndEnd.current["value"] === 2) 
           || (initOrEndStart.current["value"] === 2 && initOrEndEnd.current["value"] === 1))
           {
-            console.log("We selected two end nodes")
             updatedTable.current = table["table"].map((rowArray, rowIndex) => {
               if (rowIndex === initOrEndStart.current["row"]) {
-                console.log("Same row : ", rowIndex, rowArray)
                 return rowArray.map((node, columnIndex) => {
                   if (columnIndex === initOrEndStart.current["column"]) {
-                    console.log("Same column : ", columnIndex, node)
                       const updatedNode = new Node(
                         node.id,
                         initOrEndStart.current["value"],
@@ -167,12 +139,7 @@ export function Board()
               }
               return rowArray;
             });
-            console.log("MY this updated.current")
-            console.log(updatedTable.current);
           }else {
-            console.log("They are not equal");
-            console.log(initOrEndEnd.current)
-            console.log(initOrEndStart.current)
             updatedTable.current = table["table"].map((rowArray, rowIndex) => {
               if (rowIndex === initOrEndEnd.current["row"]) {
                   return rowArray.map((node, columnIndex) => {
@@ -205,8 +172,6 @@ export function Board()
               return rowArray;
             });
           }
-          console.log()
-          console.log("___________________________");
         }else{
           updatedTable.current = table["table"].map((rowArray, rowIndex) => {
             if (rowIndex === row) {
@@ -241,9 +206,7 @@ export function Board()
           });
         }
         if(value === 1 || value === 2) {
-          console.log("Clicked on node")
           if(!holdingEndNodes.current){
-            console.log("Holding a node")
             initOrEndEnd.current = {};
             initOrEndStart.current = {};
             initOrEndStart.current["column"] = column;
@@ -289,9 +252,6 @@ export function Board()
           table["endNode"],
           table["dispatch"])
         if(initOrEndEnd["current"].hasOwnProperty("value")){
-          console.log("We have and end");
-          console.log(initOrEndStart.current)
-          console.log(initOrEndEnd.current)
           if((initOrEndStart.current["value"] === 1 && initOrEndEnd.current["value"] === 2)
             || initOrEndStart.current["value"] === 2 && initOrEndEnd.current["value"] === 1
           )
@@ -314,19 +274,17 @@ export function Board()
           initOrEndStart.current = {};
           holdingEndNodes.current = false;
           setNodeIsPressed(false);
-          console.log("MY new table ");
-          console.log(newTable.current);
           newTable.current.bindNodes();
         }
         return newTable.current;
-  
-      case ACTIONS.TEST:
-  
-        return table;
-        
+
       case ACTIONS.MODIFY_ALL : 
         return action.payload.arr;
     }
+  }
+  function handleReset() {
+    setStart(false);
+    resetTable();
   }
   return (
     <section id='main'>
@@ -348,8 +306,8 @@ export function Board()
                   mouseUp={handleMouseUp}
                   changingCellsOnOver={changingCellsOnOver}
                   isMouseDown={isMouseDown}
-                  setChangingCellsOnOver={setChangingCellsOnOver}
                   nodeIsPressed={nodeIsPressed}
+                  setChangingCellsOnOver={setChangingCellsOnOver}
                   setNodeIsPressed={(prev) => setNodeIsPressed(!prev)}
                   />)
               })
@@ -357,7 +315,8 @@ export function Board()
           )
       }
       </div>
-      <div onClick={handleStart}>Start</div>
+      <div className='starButton' onClick={handleStart}>Start</div>
+      <div className='resetButton' onClick={handleReset}>Reset</div>
     </section>
   )
 }
